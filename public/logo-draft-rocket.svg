@@ -1,0 +1,15 @@
+<svg 
+    id="dungship-logo"
+    data-name="dungship logo" 
+    xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" 
+    viewBox="0 0 1024 1024">
+    <defs>
+        <style>.cls-1{fill:url(#logo-linear-gradient);}</style>
+        <linearGradient id="logo-linear-gradient" x1="0" y1="512" x2="1024" y2="512" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#3b82f6"/>
+            <stop offset="1" stop-color="#1d4ed8"/>
+        </linearGradient>
+    </defs>
+    <path class="cls-1" d="M512 64C480 64 454.4 89.6 454.4 121.6V281.6C300.8 300.8 192 416 192 576C192 736 300.8 851.2 454.4 870.4V960C454.4 992 480 1017.6 512 1017.6C544 1017.6 569.6 992 569.6 960V870.4C723.2 851.2 832 736 832 576C832 416 723.2 300.8 569.6 281.6V121.6C569.6 89.6 544 64 512 64ZM512 448C582.7 448 640 505.3 640 576C640 646.7 582.7 704 512 704C441.3 704 384 646.7 384 576C384 505.3 441.3 448 512 448Z"/>
+</svg>

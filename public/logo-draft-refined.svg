@@ -1,0 +1,58 @@
+<svg 
+    id="dungship-logo"
+    data-name="dungship logo" 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 500 600">
+    <defs>
+        <linearGradient id="logo-gradient" x1="250" y1="0" x2="250" y2="600" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#fdba74"/> <!-- orange-300 -->
+            <stop offset="50%" stop-color="#f97316"/> <!-- orange-500 -->
+            <stop offset="100%" stop-color="#ec4899"/> <!-- pink-500 -->
+        </linearGradient>
+    </defs>
+    
+    <g fill="none" stroke="url(#logo-gradient)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+        
+        <!-- Graduation Cap -->
+        <!-- Top Diamond -->
+        <path d="M250 50 L100 120 L250 190 L400 120 Z" />
+        <!-- Cap Base -->
+        <path d="M140 140 L140 180 Q250 230 360 180 L360 140" />
+        <!-- Tassel -->
+        <path d="M100 120 L100 200" stroke-width="12" />
+        <circle cx="100" cy="215" r="10" fill="url(#logo-gradient)" stroke="none"/>
+
+        <!-- Rocket Body -->
+        <path d="M190 200 
+                 Q 150 250 150 400 
+                 L 150 400 
+                 L 200 480 
+                 L 300 480 
+                 L 350 400
+                 Q 350 250 310 200
+                 " />
+        
+        <!-- Rocket Window -->
+        <circle cx="250" cy="320" r="40" stroke-width="20" />
+
+        <!-- Vertical Line on Body (detail from image) -->
+        <line x1="250" y1="380" x2="250" y2="480" stroke-width="15" />
+
+        <!-- Side Fins -->
+        <!-- Connected to main body path implicitly or separate? Image has them somewhat integrated. Let's make them separate curves -->
+        <!-- Left Fin -->
+        <path d="M150 400 Q 120 450 120 480 L 150 480" stroke-width="20"/> 
+        <!-- Right Fin -->
+        <path d="M350 400 Q 380 450 380 480 L 350 480" stroke-width="20"/>
+
+        <!-- Flame -->
+        <path d="M200 520 Q 250 620 300 520 M230 540 L 250 580 L 270 540" fill="url(#logo-gradient)" stroke="none" />
+        
+        <!-- Brackets { } -->
+        <!-- Left Bracket -->
+        <path d="M100 350 Q 60 350 60 400 L 60 420 Q 60 440 40 440 Q 60 440 60 460 L 60 480 Q 60 530 100 530" />
+        
+        <!-- Right Bracket -->
+        <path d="M400 350 Q 440 350 440 400 L 440 420 Q 440 440 460 440 Q 440 440 440 460 L 440 480 Q 440 530 400 530" />
+    </g>
+</svg>

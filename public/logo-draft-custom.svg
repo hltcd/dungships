@@ -1,0 +1,43 @@
+<svg 
+    id="dungship-logo"
+    data-name="dungship logo" 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 1024 1024">
+    <defs>
+        <linearGradient id="logo-linear-gradient" x1="0" y1="0" x2="1024" y2="1024" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#3b82f6"/>
+            <stop offset="1" stop-color="#1d4ed8"/>
+        </linearGradient>
+    </defs>
+    
+    <!-- Group for the logo shape -->
+    <g fill="url(#logo-linear-gradient)">
+         <!-- Graduation Cap Top -->
+         <path d="M512 128L256 224L512 320L768 224L512 128ZM256 224L256 350L280 360L280 234L256 224Z"/>
+         <!-- Cap Tassel -->
+         <rect x="250" y="220" width="10" height="100" rx="5" />
+         <circle cx="255" cy="330" r="15" />
+
+         <!-- Rocket Body (Hollow with Window) -->
+         <path d="M380 320 
+                  Q 320 500 380 800 
+                  L 420 850 
+                  L 604 850 
+                  L 644 800
+                  Q 704 500 644 320
+                  Q 512 360 380 320
+                  M 512 550
+                  A 80 80 0 1 1 512 390
+                  A 80 80 0 1 1 512 550
+                  Z" fill-rule="evenodd"/>
+
+         <!-- Left Bracket { -->
+         <path d="M220 500 Q 180 500 180 550 L 180 600 Q 180 640 140 640 Q 180 640 180 680 L 180 730 Q 180 780 220 780 L 240 780 L 240 750 L 220 750 Q 210 750 210 730 L 210 680 Q 210 620 250 640 L 250 640 Q 210 660 210 600 L 210 550 Q 210 530 220 530 L 240 530 L 240 500 Z" />
+
+         <!-- Right Bracket } -->
+         <path d="M804 500 L 784 500 L 784 530 Q 794 530 794 550 L 794 600 Q 794 660 754 640 L 754 640 Q 794 620 794 680 L 794 730 Q 794 750 784 750 L 764 750 L 764 780 L 784 780 Q 824 780 824 730 L 824 680 Q 824 640 864 640 Q 824 640 824 600 L 824 550 Q 824 500 784 500 Z"/>
+
+         <!-- Flame -->
+         <path d="M450 860 Q 512 1000 574 860 Q 512 920 450 860 Z" />
+    </g>
+</svg>

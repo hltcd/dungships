@@ -1,0 +1,178 @@
+// schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  bio           String?   @db.Text
+  password      String?   // For credentials auth (hashed)
+  role          Role      @default(FREE)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  progress      UserProgress[]
+  purchases     Purchase[]
+  reviews       Review[]
+  
+  // Referral System
+  referralCode  String?   @unique
+  referredBy    String?
+  proExpiresAt  DateTime?
+
+  referrer      User?     @relation("Referrals", fields: [referredBy], references: [id])
+  referrals     User[]    @relation("Referrals")
+}
+
+enum Role {
+  FREE   // Hội viên miễn phí
+  PRO    // Hội viên đã đăng ký Pro
+  ADMIN  // Quản trị viên
+}
+
+
+// NextAuth Models
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Course Content Models
+model Course {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  image       String?
+  price       Int      @default(0) // 0 = Free
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lessons   Lesson[]
+  purchases Purchase[]
+}
+
+model Lesson {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String
+  description   String?
+  content       String   @db.Text
+  videoId       String?  // Bunny.net video ID
+  videoUrl      String?  // CDN URL for playback
+  videoDuration Int?     // Duration in seconds
+  order         Int      @default(0) // Order in the course
+  isFree        Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+  
+  resources     Json?    // [{ title: string, url: string }]
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  progress UserProgress[]
+
+  @@unique([courseId, slug])
+  @@index([courseId])
+}
+
+// User Data Models
+model UserProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  lessonId    String
+  isCompleted Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  description     String
+  longDescription String?
+  features        String[]
+  image           String
+  gallery         String[]
+  price           Int
+  originalPrice   Int?
+  isPublished     Boolean  @default(true)
+  tags            String[]
+  link            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  reviews   Review[]
+  purchases Purchase[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  user      String
+  avatar    String
+  rating    Int
+  date      String // Using string to match mock data simplicity or use DateTime
+  content   String
+  
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  
+  userId    String? // Optional for legacy support, but new reviews should have it
+  reviewer  User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Purchase {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String?
+  productId String?
+  createdAt DateTime @default(now())
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course  Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@unique([userId, productId])
+}
