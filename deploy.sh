@@ -16,11 +16,11 @@ docker compose up -d --build --no-deps app
 # 3. Cập nhật Database (Migration & Seed)
 echo "🛠️ Đang chạy Migration & Seed Database..."
 # Generate Prisma Client mới nhất
-docker compose exec app npx prisma generate
+docker compose exec app npx -y prisma generate
 # Chạy migration (cập nhật cấu trúc bảng)
-docker compose exec app npx prisma migrate deploy
+docker compose exec app npx -y prisma migrate deploy
 # Chạy seed (tạo dữ liệu mẫu & admin)
-docker compose exec app npx prisma db seed
+docker compose exec app npx -y prisma db seed
 
 # 4. Dọn dẹp rác (Image cũ không dùng nữa)
 echo "🧹 Đang dọn dẹp hệ thống..."
