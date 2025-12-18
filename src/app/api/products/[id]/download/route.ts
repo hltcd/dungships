@@ -57,9 +57,19 @@ export async function GET(
         // If it stores a full URL, we strip the domain if possible, or just use it if it matches our expected format
         let key = product.link;
         if (key.startsWith("http")) {
-             // Fallback for legacy data: try to extract key, or just redirect if it is external
-             // If it's our R2 public URL, we might want to sign it, but if bucket is public, it doesn't matter.
-             // But for new uploads, it will be just the key.
+             // Fallback: extract key from URL if it's our public URL
+             try {
+                const url = new URL(key);
+                key = url.pathname.substring(1);
+             } catch (e) {
+                // Keep as is if not a valid URL
+             }
+        }
+
+        // SECURITY: Force path to stay inside sourcecodes folder
+        if (!key.startsWith("sourcecodes/")) {
+            console.error(`Blocked suspicious download attempt for key: ${key}`);
+            return NextResponse.json({ error: "Secure path violation" }, { status: 403 });
         }
 
         const command = new GetObjectCommand({

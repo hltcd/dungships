@@ -26,9 +26,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Filename and ContentType required" }, { status: 400 });
   }
 
-  // Determine folder and secure prefix
-  const targetFolder = folder === "source" ? "sourcecodes" : "imagesSourcecodes";
-  const uniqueFilename = `${targetFolder}/${Date.now()}-${filename.replace(/\s+/g, '-')}`;
+  // 1. Strict Validation
+  const allowedImageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  const allowedSourceTypes = ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'];
+  const allowedImageExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+  const allowedSourceExtensions = ['zip', 'rar', '7z'];
+
+  const fileExtension = filename.split('.').pop()?.toLowerCase();
+  
+  // Sanitize Filename
+  const sanitizedFilename = filename
+    .replace(/[^a-zA-Z0-9.-]/g, '-') // Replace special chars with hyphen
+    .replace(/-+/g, '-')             // Remove multiple hyphens
+    .substring(0, 100);             // Limit length
+
+  let targetFolder = "";
+  if (folder === "source") {
+      // Validate Source Code
+      if (!allowedSourceTypes.includes(contentType) && !allowedSourceExtensions.includes(fileExtension || "")) {
+          return NextResponse.json({ error: "Invalid source code file type. Only ZIP/RAR/7Z allowed." }, { status: 400 });
+      }
+      targetFolder = "sourcecodes";
+  } else {
+      // Default to images
+      if (!allowedImageTypes.includes(contentType) || !allowedImageExtensions.includes(fileExtension || "")) {
+          return NextResponse.json({ error: "Invalid image type. Only JPG, PNG, WEBP, GIF allowed." }, { status: 400 });
+      }
+      targetFolder = "imagesSourcecodes";
+  }
+
+  const uniqueFilename = `${targetFolder}/${Date.now()}-${sanitizedFilename}`;
 
   const command = new PutObjectCommand({
         Bucket: process.env.R2_BUCKET_NAME,
@@ -39,9 +66,8 @@ export async function POST(request: Request) {
   try {
       const signedUrl = await getSignedUrl(s3, command, { expiresIn: 3600 });
       
-      // For images, we might want the public URL
-      // For source code, we ONLY want the Key (to be stored in DB for secure generation later)
-      // But for simplicity, we return both. The frontend decides what to save.
+      // For images, we return the public URL (if user set it to public)
+      // For source code, we return the key to be stored in DB
       const publicUrl = `${process.env.R2_PUBLIC_URL}/${uniqueFilename}`;
       
       return NextResponse.json({ 
