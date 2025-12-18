@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      },
+      {
+        protocol: 'https',
         hostname: '*', // Debug: allow all for now to prevent crashes with random seed data
       }
     ],

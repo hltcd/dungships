@@ -78,13 +78,13 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
 
       {/* Thumbnails */}
       {images.length > 1 && (
-          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide px-2">
             {images.map((img, idx) => (
                 <button 
                     key={idx}
                     onClick={() => setSelectedIndex(idx)}
-                    className={`relative w-24 h-16 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${
-                        idx === selectedIndex ? 'border-blue-500 shadow-lg shadow-blue-500/20' : 'border-transparent opacity-50 hover:opacity-100'
+                    className={`relative w-28 h-20 md:w-24 md:h-16 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${
+                        idx === selectedIndex ? 'border-blue-600 shadow-lg shadow-blue-600/30 ring-2 ring-blue-600/20' : 'border-transparent opacity-60 hover:opacity-100'
                     }`}
                 >
                     <img src={img} alt="Thumbnail" className="w-full h-full object-cover" />

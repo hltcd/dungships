@@ -18,6 +18,12 @@ if [ -f .env ]; then
     fi
 
     # Sửa lỗi Auth.js trên Production (Quan trọng)
+    if ! grep -q "AUTH_SECRET" .env; then
+        echo "🔐 Đang tạo AUTH_SECRET cho bảo mật..."
+        NEW_SECRET=$(openssl rand -base64 32)
+        echo "AUTH_SECRET=\"$NEW_SECRET\"" >> .env
+    fi
+
     if ! grep -q "AUTH_TRUST_HOST" .env; then
         echo "🛡️ Đang cấu hình AUTH_TRUST_HOST=true cho Production..."
         echo "AUTH_TRUST_HOST=true" >> .env
