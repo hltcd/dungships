@@ -13,7 +13,16 @@ echo "🐳 Đang build lại Docker image..."
 # --no-deps: Không restart lại các service phụ thuộc (như db) nếu không cần thiết
 docker compose up -d --build --no-deps app
 
-# 3. Dọn dẹp rác (Image cũ không dùng nữa)
+# 3. Cập nhật Database (Migration & Seed)
+echo "🛠️ Đang chạy Migration & Seed Database..."
+# Generate Prisma Client mới nhất
+docker compose exec app npx prisma generate
+# Chạy migration (cập nhật cấu trúc bảng)
+docker compose exec app npx prisma migrate deploy
+# Chạy seed (tạo dữ liệu mẫu & admin)
+docker compose exec app npx prisma db seed
+
+# 4. Dọn dẹp rác (Image cũ không dùng nữa)
 echo "🧹 Đang dọn dẹp hệ thống..."
 docker image prune -f
 
