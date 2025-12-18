@@ -8,12 +8,24 @@ EMAIL="dunglvdeveloper@gmail.com"
 
 echo "🚀 Bắt đầu quá trình Deploy 'IMMORTAL Bulletproof'..."
 
-# 1. Tự động sửa file .env nếu user để localhost
+# 1. Tự động sửa file .env
 if [ -f .env ]; then
+    # Sửa lỗi kết nối Database
     if grep -q "localhost:5432" .env; then
         echo "🔧 Tự động chuyển .env sang 'postgres'..."
         cp .env .env.bak
         sed -i 's/localhost:5432/postgres:5432/g' .env
+    fi
+
+    # Sửa lỗi Auth.js trên Production (Quan trọng)
+    if ! grep -q "AUTH_TRUST_HOST" .env; then
+        echo "🛡️ Đang cấu hình AUTH_TRUST_HOST=true cho Production..."
+        echo "AUTH_TRUST_HOST=true" >> .env
+    fi
+
+    if ! grep -q "AUTH_URL" .env; then
+        echo "🌐 Đang cấu hình AUTH_URL..."
+        echo "AUTH_URL=https://$DOMAIN" >> .env
     fi
 fi
 
