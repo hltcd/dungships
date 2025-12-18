@@ -1,14 +1,32 @@
-
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 import { courses } from '../src/lib/courses';
 import { products } from '../src/lib/products';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('Start seeding ...');
+  console.log('🚀 Start seeding ...');
 
-  // Seed Courses
+  // 1. Seed Admin User
+  const adminEmail = 'admin@hoclaptrinhcungdung.com';
+  const hashedPassword = await bcrypt.hash('admin123', 10);
+
+  const admin = await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {
+      role: Role.ADMIN,
+    },
+    create: {
+      email: adminEmail,
+      name: 'Admin',
+      password: hashedPassword,
+      role: Role.ADMIN,
+    },
+  });
+  console.log(`✅ Created Admin user: ${admin.email}`);
+
+  // 2. Seed Courses
   for (const course of courses) {
     const createdCourse = await prisma.course.upsert({
       where: { slug: course.slug },
@@ -23,23 +41,21 @@ async function main() {
         description: course.description,
         image: course.image,
         isPublished: true,
-        price: 0, // Mock data didn't have price for courses, setting default
+        price: 0,
         lessons: {
           create: course.lessons.map((lesson, index) => ({
             title: lesson.title,
             slug: lesson.slug,
-            duration: lesson.duration,
-            isFree: lesson.isFree,
-            position: index,
+            order: index, // Changed from position to order
             content: `Nội dung demo cho bài học **${lesson.title}**. \n\n## Giới thiệu\n\nĐây là nội dung được tạo tự động từ seed script.`,
           })),
         },
       },
     });
-    console.log(`Created course with id: ${createdCourse.id}`);
+    console.log(`📘 Created course: ${createdCourse.title}`);
   }
 
-  // Seed Products (Source Code)
+  // 3. Seed Products (Source Code)
   for (const product of products) {
     const createdProduct = await prisma.product.upsert({
       where: { slug: product.slug },
@@ -61,25 +77,25 @@ async function main() {
         tags: product.tags,
         link: product.link,
         reviews: {
-            create: product.reviews?.map((review) => ({
-                user: review.user,
-                avatar: review.avatar,
-                rating: review.rating,
-                content: review.content,
-                date: review.date
-            }))
+          create: product.reviews?.map((review) => ({
+            user: review.user,
+            avatar: review.avatar,
+            rating: review.rating,
+            content: review.content,
+            date: review.date
+          }))
         }
       },
     });
-    console.log(`Created product with id: ${createdProduct.id}`);
+    console.log(`📦 Created product: ${createdProduct.title}`);
   }
 
-  console.log('Seeding finished.');
+  console.log('✨ Seeding finished.');
 }
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error('❌ Seeding error:', e);
     process.exit(1);
   })
   .finally(async () => {
