@@ -38,21 +38,21 @@ export default function AnimatedPrice({ price, originalPrice }: AnimatedPricePro
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
 
   return (
-    <div className="flex items-end gap-4 mb-8">
+    <div className="flex items-end flex-wrap gap-4 mb-8">
         <div className="flex flex-col">
-            <span className="text-sm font-bold mb-1 uppercase tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 animate-pulse">
+            <span className="text-xs font-bold mb-1 uppercase tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 animate-pulse">
                 Giá bán ưu đãi
             </span>
-             <span className="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 tracking-tight drop-shadow-2xl">
+             <span className="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 tracking-tight drop-shadow-2xl">
                 {formatCurrency(displayPrice)}
             </span>
         </div>
         {originalPrice && (
-             <div className="flex flex-col mb-2 pb-1 relative group">
-                <span className="text-xl text-gray-600 line-through font-bold decoration-red-500/50 decoration-2">
+             <div className="flex flex-col mb-1.5 pb-0.5 relative group">
+                <span className="text-base md:text-lg text-gray-600 line-through font-bold decoration-red-500/50 decoration-2">
                     {formatCurrency(originalPrice)}
                 </span>
-                <span className="absolute -top-6 -right-6 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-full animate-bounce shadow-lg shadow-red-500/20">
+                <span className="absolute -top-5 -right-5 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full animate-bounce shadow-lg shadow-red-500/20">
                     -{Math.round(((originalPrice - price) / originalPrice) * 100)}%
                 </span>
             </div>

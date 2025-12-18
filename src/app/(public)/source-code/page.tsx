@@ -45,7 +45,7 @@ export default async function SourceCodePage() {
 
             {/* Content */}
             <div className="p-6 relative z-10">
-                <div className="flex gap-2 mb-3">
+                <div className="flex flex-wrap gap-2 mb-4">
                     {product.tags.map(tag => (
                         <span key={tag} className="text-[10px] font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-tighter">
                             {tag}
@@ -53,7 +53,7 @@ export default async function SourceCodePage() {
                     ))}
                 </div>
 
-                <h3 className="text-xl font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 uppercase tracking-tight">
+                <h3 className="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 uppercase tracking-tight">
                     {product.title}
                 </h3>
                 <p className="text-gray-400 text-sm mb-6 line-clamp-2 min-h-[40px] font-medium leading-relaxed">
@@ -62,20 +62,20 @@ export default async function SourceCodePage() {
 
                 <div className="flex items-center justify-between border-t border-white/5 pt-4">
                     <div className="flex flex-col">
-                        <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Giá trọn gói</span>
+                        <span className="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Giá trọn gói</span>
                         <div className="flex items-baseline gap-2">
-                             <span className="text-xl font-black text-white italic">
+                             <span className="text-lg font-black text-white italic">
                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.price)}
                             </span>
                             {product.originalPrice && (
-                                <span className="text-xs text-gray-600 line-through font-bold">
+                                <span className="text-[10px] text-gray-600 line-through font-bold">
                                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.originalPrice)}
                                 </span>
                             )}
                         </div>
                     </div>
-                    <button className="bg-blue-600/10 group-hover:bg-blue-600 p-3 rounded-full text-blue-400 group-hover:text-white transition-all shadow-inner">
-                        <ArrowRight className="w-5 h-5" />
+                    <button className="bg-blue-600/10 group-hover:bg-blue-600 p-2.5 rounded-full text-blue-400 group-hover:text-white transition-all shadow-inner">
+                        <ArrowRight className="w-4 h-4" />
                     </button>
                 </div>
             </div>

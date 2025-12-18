@@ -135,15 +135,15 @@ export default async function ProductDetailPage(props: PageProps) {
             <div className="mb-6">
                  <div className="flex gap-2 mb-4 flex-wrap">
                     {product.tags.map(tag => (
-                        <span key={tag} className="text-sm font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                        <span key={tag} className="text-xs font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 uppercase">
                             #{tag}
                         </span>
                     ))}
                 </div>
-                <h1 className="text-[32px] md:text-[48px] font-black text-white mb-4 leading-tight uppercase tracking-tight">
+                <h1 className="text-[28px] md:text-[42px] font-black text-white mb-6 leading-[1.15] uppercase tracking-tight">
                     {product.title}
                 </h1>
-                <p className="text-base text-gray-400 leading-relaxed font-medium">
+                <p className="text-sm md:text-base text-gray-400 leading-relaxed font-medium">
                     {product.description}
                 </p>
             </div>
