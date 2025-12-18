@@ -1,0 +1,63 @@
+
+version: '3.9'
+
+services:
+  app:
+    container_name: dungshipcourse-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXT_TELEMETRY_DISABLED=1
+      # Auth Secret should be in .env
+      - AUTH_SECRET=${AUTH_SECRET} 
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - dungship-network
+
+  nginx:
+    container_name: dungshipcourse-nginx
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      # Uncomment for SSL
+      # - ./certbot/conf:/etc/letsencrypt
+      # - ./certbot/www:/var/www/certbot
+    depends_on:
+      - app
+    networks:
+      - dungship-network
+
+  postgres:
+    container_name: dungshipcourse-db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-dungshipcourse}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dungship-network
+    ports:
+      - "5432:5432" # Optional: expose DB port to host
+
+networks:
+  dungship-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
