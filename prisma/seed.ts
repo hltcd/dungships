@@ -1,4 +1,4 @@
-import 'dotenv/config';
+
 import { PrismaClient } from '@prisma/client';
 import { courses } from '../src/lib/courses';
 import { products } from '../src/lib/products';
