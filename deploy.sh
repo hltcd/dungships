@@ -56,7 +56,7 @@ if [ ! -f "./certbot/conf/live/$DOMAIN/fullchain.pem" ]; then
       "openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
         -keyout '/etc/letsencrypt/live/$DOMAIN/privkey.pem' \
         -out '/etc/letsencrypt/live/$DOMAIN/fullchain.pem' \
-        -subj '/CN=localhost'" certbot
+        -subj '/CN=$DOMAIN'" certbot
 fi
 
 # 4. Khởi động TẤT CẢ các service
@@ -94,7 +94,7 @@ if grep -q "localhost" "./certbot/conf/live/$DOMAIN/fullchain.pem" 2>/dev/null; 
     echo "🛡️ Đang yêu cầu Let's Encrypt cấp SSL thật cho $DOMAIN..."
     docker compose run --rm --entrypoint \
       "certbot certonly --webroot -w /var/www/certbot \
-        --email $EMAIL --agree-tos --no-eff-email \
+        --email $EMAIL --agree-tos --no-eff-email --non-interactive \
         -d $DOMAIN -d www.$DOMAIN --force-renewal" certbot
     
     echo "🔄 Loading lại Nginx với SSL mới..."
