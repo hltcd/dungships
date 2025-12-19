@@ -160,6 +160,8 @@ model Review {
   
   userId    String // Made mandatory for new reviews
   reviewer  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
 
   @@unique([userId, productId])
 }

@@ -66,7 +66,6 @@ export default async function ProductDetailPage(props: PageProps) {
                 reviewer: true
             },
             orderBy: {
-                // @ts-ignore
                 createdAt: 'desc' 
             }
         } 
