@@ -56,7 +56,7 @@ if [ ! -f "./certbot/conf/live/$DOMAIN/fullchain.pem" ]; then
       "openssl req -x509 -nodes -newkey rsa:2048 -days 1 \
         -keyout '/etc/letsencrypt/live/$DOMAIN/privkey.pem' \
         -out '/etc/letsencrypt/live/$DOMAIN/fullchain.pem' \
-        -subj '/CN=$DOMAIN'" certbot
+        -subj '/CN=DummyCert $DOMAIN'" certbot
 fi
 
 # 4. Khởi động TẤT CẢ các service
@@ -90,7 +90,7 @@ docker compose exec -T app npx -y prisma@5.22.0 migrate deploy
 # docker compose exec -T app npx -y prisma@5.22.0 db seed
 
 # 7. Tự động đăng ký SSL thật nếu đang dùng Dummy
-if grep -q "localhost" "./certbot/conf/live/$DOMAIN/fullchain.pem" 2>/dev/null; then
+if grep -q "DummyCert" "./certbot/conf/live/$DOMAIN/fullchain.pem" 2>/dev/null; then
     echo "🛡️ Đang yêu cầu Let's Encrypt cấp SSL thật cho $DOMAIN..."
     docker compose run --rm --entrypoint \
       "certbot certonly --webroot -w /var/www/certbot \

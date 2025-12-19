@@ -56,8 +56,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/next.config.ts ./next.config.ts
-COPY --from=builder /app/postcss.config.js ./postcss.config.js
-COPY --from=builder /app/tailwind.config.ts ./tailwind.config.ts
+COPY --from=builder /app/postcss.config.mjs ./postcss.config.mjs
 
 # Expose port and start
 EXPOSE 3000
