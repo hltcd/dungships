@@ -84,10 +84,10 @@ if [ "$DB_READY" != "1" ]; then
 fi
 
 # 6. Cập nhật Database
-echo "🛠️ Đang chạy Migration & Seed Database..."
+echo "🛠️ Đang chạy Migration..."
 docker compose exec -T app npx -y prisma@5.22.0 generate || true
 docker compose exec -T app npx -y prisma@5.22.0 migrate deploy
-docker compose exec -T app npx -y prisma@5.22.0 db seed
+# docker compose exec -T app npx -y prisma@5.22.0 db seed
 
 # 7. Tự động đăng ký SSL thật nếu đang dùng Dummy
 if grep -q "localhost" "./certbot/conf/live/$DOMAIN/fullchain.pem" 2>/dev/null; then
