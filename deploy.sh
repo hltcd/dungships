@@ -10,28 +10,35 @@ echo "🚀 Bắt đầu quá trình Deploy 'IMMORTAL Bulletproof'..."
 
 # 1. Tự động sửa file .env
 if [ -f .env ]; then
-    # Sửa lỗi kết nối Database
-    if grep -q "localhost:5432" .env; then
-        echo "🔧 Tự động chuyển .env sang 'postgres'..."
-        cp .env .env.bak
-        sed -i 's/localhost:5432/postgres:5432/g' .env
-    fi
+    echo "🔧 Đang tối ưu hóa file .env cho Production..."
+    
+    # Sao lưu trước khi sửa
+    cp .env .env.bak
 
-    # Sửa lỗi Auth.js trên Production (Quan trọng)
+    # Sửa lỗi kết nối Database (chuyển localhost sang service name trong docker)
+    sed -i 's/localhost:5432/postgres:5432/g' .env
+
+    # XÓA QUOTES (Dấu ngoặc kép) dư thừa - Docker env_file cực kỳ nhạy cảm với vụ này
+    # Ví dụ: AUTH_SECRET="abc" -> AUTH_SECRET=abc
+    sed -i 's/=\(['"'"'"]\)\(.*\)\1/= \2/g; s/= /=/g' .env
+
+    # Đảm bảo các biến Auth.js chuẩn chỉnh
     if ! grep -q "AUTH_SECRET" .env; then
-        echo "🔐 Đang tạo AUTH_SECRET cho bảo mật..."
-        NEW_SECRET=$(openssl rand -base64 32)
-        echo "AUTH_SECRET=\"$NEW_SECRET\"" >> .env
+        echo "🔐 Tạo AUTH_SECRET mới..."
+        echo "AUTH_SECRET=\"$(openssl rand -base64 32)\"" >> .env
     fi
 
     if ! grep -q "AUTH_TRUST_HOST" .env; then
-        echo "🛡️ Đang cấu hình AUTH_TRUST_HOST=true cho Production..."
         echo "AUTH_TRUST_HOST=true" >> .env
     fi
 
     if ! grep -q "AUTH_URL" .env; then
-        echo "🌐 Đang cấu hình AUTH_URL..."
         echo "AUTH_URL=https://$DOMAIN" >> .env
+    fi
+
+    # Fallback cho NextAuth v4/v5 compatibility
+    if ! grep -q "NEXTAUTH_URL" .env; then
+        echo "NEXTAUTH_URL=https://$DOMAIN" >> .env
     fi
 fi
 
