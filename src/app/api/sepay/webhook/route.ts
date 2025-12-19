@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
     // --- CASE 2: PRODUCT PURCHASE ---
     // Pattern: Search for slug prefix + userId suffix anywhere in content (loop through all matches)
     const productRegex = /([A-Z0-9-]{5,15})\s+([A-Z0-9]{6})\b/gi;
-    const matches = Array.from(content?.matchAll(productRegex) || []);
+    const matches: RegExpExecArray[] = content ? Array.from(content.matchAll(productRegex)) : [];
 
     for (const match of matches) {
         const capturedPrefix = match[1].toLowerCase().replace(/[^a-z0-9]/g, '');
