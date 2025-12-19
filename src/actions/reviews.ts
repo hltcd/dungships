@@ -30,7 +30,21 @@ export async function createReview(productId: string, formData: FormData) {
 
         if (!user) return { error: "Người dùng không tồn tại" };
 
-        // 2. Create Review with live connection
+        // 2. Check if user already reviewed this product
+        const existingReview = await prisma.review.findUnique({
+            where: {
+                userId_productId: {
+                    userId: user.id,
+                    productId: productId
+                }
+            }
+        });
+
+        if (existingReview) {
+            return { error: "Bạn đã đánh giá sản phẩm này rồi" };
+        }
+
+        // 3. Create Review with live connection
         try {
             await prisma.review.create({
                 data: {
@@ -69,15 +83,13 @@ export async function createReview(productId: string, formData: FormData) {
 export async function deleteReviewAction(reviewId: string) {
     try {
         const session = await auth();
-        // Check if user is admin. 
-        // Assuming current logic checks role, but let's be safe.
-        const user = await prisma.user.findUnique({
-             where: { email: session?.user?.email || '' },
-             select: { role: true }
-        });
-
-        if (user?.role !== 'ADMIN') {
+        
+        if (session?.user?.role !== 'ADMIN') {
             return { error: "Bạn không có quyền xóa review này" };
+        }
+
+        if (!reviewId) {
+            return { error: "ID đánh giá không hợp lệ" };
         }
 
         await prisma.review.delete({
