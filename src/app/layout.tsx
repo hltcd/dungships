@@ -46,6 +46,11 @@ export const metadata: Metadata = {
     description: "Học lập trình qua dự án thực tế cực nhanh và hiệu quả.",
     images: ["/og-image.png"],
   },
+  icons: {
+    icon: "/logo.png", // Fallback to public/logo.png
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   robots: {
     index: true,
     follow: true,
