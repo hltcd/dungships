@@ -5,6 +5,16 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 
+// Diagnostic logs for Production Auth Configuration
+if (process.env.NODE_ENV === "production") {
+  console.log("🔐 [AUTH_DIAGNOSTIC] Checking environment variables...");
+  console.log("AUTH_URL:", process.env.AUTH_URL ? "✅ Set" : "❌ Missing");
+  console.log("AUTH_SECRET:", process.env.AUTH_SECRET ? "✅ Set" : "❌ Missing");
+  console.log("AUTH_TRUST_HOST:", process.env.AUTH_TRUST_HOST ? "✅ Set" : "❌ Missing");
+  console.log("AUTH_GOOGLE_ID:", process.env.AUTH_GOOGLE_ID ? "✅ Set" : "❌ Missing");
+  console.log("AUTH_GOOGLE_SECRET:", process.env.AUTH_GOOGLE_SECRET ? "✅ Set" : "❌ Missing");
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: {

@@ -10,10 +10,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
       - NEXT_TELEMETRY_DISABLED=1
-      # Auth Secret should be in .env
-      - AUTH_SECRET=${AUTH_SECRET} 
     env_file:
       - .env
     depends_on:
