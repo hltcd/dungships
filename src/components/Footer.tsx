@@ -56,12 +56,13 @@ export default function Footer() {
                 </div>
             </div>
 
-            {/* Copyright */}
-            <div className="border-t border-white/5 pt-8">
+            <div className="border-t border-white/5 pt-8 flex flex-col items-center gap-2">
                 <p className="text-gray-600 text-sm">
                     Copyright © {currentYear} Học Lập Trình Cùng Dũng LLC
                 </p>
-              
+                <p className="text-gray-700 text-[10px] font-mono opacity-50 uppercase tracking-tighter">
+                    Version 1.0.5
+                </p>
             </div>
         </div>
     </footer>
