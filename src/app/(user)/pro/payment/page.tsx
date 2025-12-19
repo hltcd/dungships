@@ -54,7 +54,7 @@ export default async function PaymentPage(props: PageProps) {
 
   const selectedPlan = config[plan];
   
-  const ACCOUNT_NO = "0366468863";
+  const ACCOUNT_NO = "VQRQACJYV7290";
   const BANK = "MBBank";
   const ACCOUNT_NAME = "LE VIET DUNG";
   
@@ -62,7 +62,7 @@ export default async function PaymentPage(props: PageProps) {
   const userIdSuffix = session.user.id.slice(-6).toUpperCase();
   const DESCRIPTION = `PRO${selectedPlan.code}${userIdSuffix}`; 
   
-  const qrUrl = `https://img.vietqr.io/image/${BANK}-${ACCOUNT_NO}-compact.png?amount=${selectedPlan.price}&addInfo=${encodeURIComponent(DESCRIPTION)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+  const qrUrl = `https://qr.sepay.vn/img?acc=${ACCOUNT_NO}&bank=${BANK}&amount=${selectedPlan.price}&des=${encodeURIComponent(DESCRIPTION)}`;
 
   return (
     <div className="flex flex-col min-h-screen">

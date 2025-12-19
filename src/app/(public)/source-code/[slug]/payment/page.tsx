@@ -8,7 +8,7 @@ interface PageProps {
 }
 
 const BANK = "MBBank";
-const ACCOUNT_NO = "0366468863";
+const ACCOUNT_NO = "VQRQACJYV7290";
 const ACCOUNT_NAME = "LE VIET DUNG";
 
 export default async function ProductPaymentPage(props: PageProps) {
@@ -43,7 +43,7 @@ export default async function ProductPaymentPage(props: PageProps) {
 
     // Payment Info
     const DESCRIPTION = `${product.slug.toUpperCase().slice(0, 15)} ${session.user.id.slice(-6).toUpperCase()}`;
-    const qrUrl = `https://img.vietqr.io/image/${BANK}-${ACCOUNT_NO}-compact.png?amount=${product.price}&addInfo=${encodeURIComponent(DESCRIPTION)}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
+    const qrUrl = `https://qr.sepay.vn/img?acc=${ACCOUNT_NO}&bank=${BANK}&amount=${product.price}&des=${encodeURIComponent(DESCRIPTION)}`;
 
     return (
         <PaymentProductClient 
