@@ -49,36 +49,35 @@ export async function POST(req: NextRequest) {
     }
 
     // --- CASE 2: PRODUCT PURCHASE ---
-    // Pattern: SLUG_PREFIX(10 chars) + SPACE + UserIdSuffix(6)
-    // Example: "SAAS-BOILE ABCDEF"
-    const productRegex = /^([A-Z0-9-]{1,15})\s+([A-Z0-9]{6})$/i;
-    const productMatch = content?.match(productRegex);
+    // Pattern: Search for slug prefix + userId suffix anywhere in content (loop through all matches)
+    const productRegex = /([A-Z0-9-]{5,15})\s+([A-Z0-9]{6})\b/gi;
+    const matches = Array.from(content?.matchAll(productRegex) || []);
 
-    if (productMatch) {
-        const slugPrefix = productMatch[1].toLowerCase(); // Slugs are usually lowercase
-        const userIdSuffix = productMatch[2];
+    for (const match of matches) {
+        const capturedPrefix = match[1].toLowerCase().replace(/[^a-z0-9]/g, '');
+        const userIdSuffix = match[2];
 
         // 1. Find User
         const user = await prisma.user.findFirst({
-            where: {
-                id: { endsWith: userIdSuffix, mode: 'insensitive' }
-            }
+            where: { id: { endsWith: userIdSuffix, mode: 'insensitive' } }
         });
 
         if (!user) {
-             return NextResponse.json({ success: false, message: "User not found for Product purchase" }, { status: 404 });
+            console.log(`[SePay] User not found for suffix: ${userIdSuffix}, trying next match...`);
+            continue;
         }
 
         // 2. Find Product
-        // We have to fuzzy match the slug since we only have the first 10-15 chars
-        const product = await prisma.product.findFirst({
-             where: {
-                 slug: { startsWith: slugPrefix, mode: 'insensitive' }
-             }
+        // Banks often strip hyphens, so we normalize both captured prefix and stored slugs
+        const allProducts = await prisma.product.findMany({ select: { id: true, slug: true } });
+        const product = allProducts.find(p => {
+            const normalizedSlug = p.slug.toLowerCase().replace(/[^a-z0-9]/g, '');
+            return normalizedSlug.startsWith(capturedPrefix);
         });
         
         if (!product) {
-            return NextResponse.json({ success: false, message: "Product not found" }, { status: 404 });
+            console.log(`[SePay] Product not found for prefix: ${capturedPrefix}, trying next match...`);
+            continue;
         }
 
         // 3. Create Purchase
@@ -98,7 +97,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true, message: "Purchase successful" });
     }
 
-    console.log("[SePay] Ignored transaction, no matching pattern:", content);
+    console.log("[SePay] Ignored transaction, no valid pattern/match found:", content);
     return NextResponse.json({ success: true, message: "Ignored" });
 
   } catch (error) {

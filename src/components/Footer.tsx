@@ -14,7 +14,7 @@ export default function Footer() {
             {/* Contact / Help */}
             <div className="mb-8">
                 <p className="text-gray-400 text-lg">
-                    Cần trợ giúp? Email <a href="mailto:dung@hoclaptrinhcungdung.com" className="font-bold text-white hover:text-blue-400 transition-colors">dung@hoclaptrinhcungdung.com</a>
+                    Cần trợ giúp? Email <a href="mailto:dunglvdeveloper@gmail.com" className="font-bold text-white hover:text-blue-400 transition-colors">dunglvdeveloper@gmail.com</a>
                 </p>
                 <div className="flex items-center justify-center gap-2 mt-2 text-sm text-gray-500">
                    <span>hoặc nhắn tin qua</span>
@@ -33,7 +33,7 @@ export default function Footer() {
                 <a href="https://github.com/dungship" target="_blank" rel="noopener noreferrer" className="p-3 bg-white/5 rounded-full hover:bg-white/10 hover:text-white transition-all text-gray-400">
                     <Github className="w-6 h-6" />
                 </a>
-               <a href="mailto:dung@hoclaptrinhcungdung.com" className="p-3 bg-white/5 rounded-full hover:bg-white/10 hover:text-green-400 transition-all text-gray-400">
+               <a href="mailto:dunglvdeveloper@gmail.com" className="p-3 bg-white/5 rounded-full hover:bg-white/10 hover:text-green-400 transition-all text-gray-400">
                     <Mail className="w-6 h-6" />
                 </a>
             </div>

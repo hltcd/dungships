@@ -63,7 +63,7 @@ export default function PaymentProductClient({
   }, [productId]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-24 pb-12 px-4">
+    <div className="min-h-scree pt-24 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
         <Link href={`/source-code/${productSlug}`} className="inline-flex items-center gap-2 text-gray-500 hover:text-white mb-8 transition-colors">
             <ArrowLeft className="w-4 h-4" />
