@@ -5,6 +5,7 @@ export interface Review {
     rating: number;
     date: string;
     content: string;
+    userId?: string | null;
 }
 
 export interface Product {
