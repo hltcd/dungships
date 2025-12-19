@@ -17,6 +17,8 @@ RUN \
 # 2. Rebuild the source code only when needed
 FROM node:20-alpine AS builder
 WORKDIR /app
+# Install openssl and libc6-compat for Prisma build-time requirements
+RUN apk add --no-cache openssl libc6-compat
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
