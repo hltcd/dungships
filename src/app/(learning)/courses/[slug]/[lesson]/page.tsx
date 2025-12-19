@@ -8,6 +8,7 @@ import LessonCompleteButton from '@/components/LessonCompleteButton';
 import SecureVideoPlayer from '@/components/SecureVideoPlayer';
 import CourseSidebar from '@/components/CourseSidebar';
 import MobileCourseMenu from '@/components/MobileCourseMenu';
+import { signBunnyStreamUrl, parseBunnyEmbedUrl } from '@/lib/bunny';
 
 interface PageProps {
   params: Promise<{ slug: string; lesson: string }>;
@@ -84,6 +85,22 @@ export default async function LessonPage(props: PageProps) {
       : 0;
   const isCompleted = completedLessonIds.includes(currentLesson.id);
 
+  // Sign Video URL if it's from Bunny.net and token key is configured
+  let finalVideoUrl = currentLesson.videoUrl;
+  const bunnyTokenKey = process.env.BUNNY_VIDEO_TOKEN_KEY;
+  const libraryId = process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID || "";
+
+  if (hasAccess && bunnyTokenKey) {
+      if (finalVideoUrl) {
+          const bunnyInfo = parseBunnyEmbedUrl(finalVideoUrl);
+          if (bunnyInfo) {
+              finalVideoUrl = signBunnyStreamUrl(bunnyInfo.videoId, bunnyInfo.libraryId, bunnyTokenKey);
+          }
+      } else if (currentLesson.videoId && libraryId) {
+          finalVideoUrl = signBunnyStreamUrl(currentLesson.videoId, libraryId, bunnyTokenKey);
+      }
+  }
+
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-[#111118]">
         {/* Top Navigation */}
@@ -134,9 +151,9 @@ export default async function LessonPage(props: PageProps) {
                     {/* Video Player Placeholder */}
                      <div className="aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl border border-gray-800 relative mb-8 group">
                           {hasAccess ? (
-                              currentLesson.videoUrl ? (
+                              finalVideoUrl ? (
                                 <SecureVideoPlayer 
-                                    videoUrl={currentLesson.videoUrl} 
+                                    videoUrl={finalVideoUrl} 
                                     watermarkText={`${session?.user?.email || 'User'} - ${session?.user?.id?.slice(-4) || 'ID'}`} 
                                 />
                               ) : (
