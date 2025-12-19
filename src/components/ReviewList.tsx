@@ -74,6 +74,9 @@ export default function ReviewList({ reviews }: ReviewListProps) {
                             src={review.avatar} 
                             alt={review.user} 
                             className="w-12 h-12 rounded-full border-2 border-gray-700 object-cover"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = "/default-avatar.png";
+                            }}
                         />
                         <div className="flex-1">
                             <div className="flex items-center justify-between mb-2">

@@ -77,13 +77,14 @@ async function main() {
         tags: product.tags,
         link: product.link,
         reviews: {
-          create: product.reviews?.map((review) => ({
-            user: review.user,
-            avatar: review.avatar,
-            rating: review.rating,
-            content: review.content,
-            date: review.date
-          }))
+          create: product.reviews && product.reviews.length > 0 ? [{
+            user: product.reviews[0].user,
+            avatar: product.reviews[0].avatar,
+            rating: product.reviews[0].rating,
+            content: product.reviews[0].content,
+            date: product.reviews[0].date,
+            userId: admin.id // Link to admin for seed data
+          }] : []
         }
       },
     });

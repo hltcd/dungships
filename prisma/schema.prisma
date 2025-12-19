@@ -150,16 +150,18 @@ model Product {
 model Review {
   id        String   @id @default(cuid())
   productId String
-  user      String
-  avatar    String
+  user      String   // Legacy name
+  avatar    String   // Legacy avatar
   rating    Int
-  date      String // Using string to match mock data simplicity or use DateTime
+  date      String   // Using string to match mock data simplicity
   content   String
   
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   
-  userId    String? // Optional for legacy support, but new reviews should have it
-  reviewer  User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId    String // Made mandatory for new reviews
+  reviewer  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
 }
 
 model Purchase {

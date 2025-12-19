@@ -60,7 +60,17 @@ export default async function ProductDetailPage(props: PageProps) {
 
   const product = await prisma.product.findUnique({
     where: { slug: params.slug },
-    include: { reviews: true }
+    include: { 
+        reviews: {
+            include: {
+                reviewer: true
+            },
+            orderBy: {
+                // @ts-ignore
+                createdAt: 'desc' 
+            }
+        } 
+    }
   });
 
   if (!product || (!product.isPublished && !isAdmin)) {
@@ -92,9 +102,11 @@ export default async function ProductDetailPage(props: PageProps) {
       ? product.gallery 
       : [product.image];
 
-  // Map Prisma reviews to component props if types mismatch (Prisma Date vs string)
+  // Map Prisma reviews to component props with live user data
   const reviews = product.reviews.map(r => ({
       ...r,
+      user: r.reviewer?.name || r.user,
+      avatar: r.reviewer?.image || r.avatar || "/default-avatar.png",
       date: r.date 
   }));
 

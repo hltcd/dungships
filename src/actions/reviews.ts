@@ -22,24 +22,37 @@ export async function createReview(productId: string, formData: FormData) {
             return { error: "Vui lòng chọn số sao đánh giá" };
         }
 
-        // Get user info from db to check purchase if needed, getting name/avatar
-        // Ideally we check if user purchased the product.
-        // For now, let's allow review if user exists.
+        // 1. Get user info and ID
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
-             select: { name: true, image: true }
+             select: { id: true, name: true, image: true }
         });
 
-        await prisma.review.create({
-            data: {
-                content,
-                rating,
-                productId,
-                user: user?.name || "Người dùng ẩn danh",
-                avatar: user?.image || "/default-avatar.png",
-                date: new Date().toISOString().split('T')[0] // Simple date format YYYY-MM-DD
+        if (!user) return { error: "Người dùng không tồn tại" };
+
+        // 2. Create Review with live connection
+        try {
+            await prisma.review.create({
+                data: {
+                    content,
+                    rating,
+                    productId,
+                    userId: user.id, // Direct link
+                    user: user.name || "Người dùng ẩn danh", // Legacy fallback
+                    avatar: user.image || "/default-avatar.png", // Legacy fallback
+                    date: new Date().toISOString().split('T')[0]
+                }
+            });
+        } catch (e: any) {
+            if (e.code === 'P2002') {
+                return { error: "Bạn đã đánh giá sản phẩm này rồi" };
             }
-        });
+            throw e;
+        }
+
+        // 3. Revalidate
+        const product = await prisma.product.findUnique({ where: { id: productId }, select: { slug: true } });
+        if (product) revalidatePath(`/source-code/${product.slug}`);
 
         revalidatePath(`/source-code/${productId}`); // Revalidate product page? Need slug.
         // Actually ID might not be slug. But review page is /source-code/[slug].
