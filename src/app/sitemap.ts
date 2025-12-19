@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
+
+export const dynamic = 'force-dynamic'
  
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://hoclaptrinhcungdung.com'
@@ -16,14 +18,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     select: { slug: true, updatedAt: true }
   })
  
-  const productEntries = products.map((product) => ({
+  const productEntries = products.map((product: any) => ({
     url: `${baseUrl}/source-code/${product.slug}`,
     lastModified: product.updatedAt,
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }))
  
-  const courseEntries = courses.map((course) => ({
+  const courseEntries = courses.map((course: any) => ({
     url: `${baseUrl}/courses/${course.slug}`,
     lastModified: course.updatedAt,
     changeFrequency: 'weekly' as const,

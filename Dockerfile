@@ -19,6 +19,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 # Install openssl and libc6-compat for Prisma build-time requirements
 RUN apk add --no-cache openssl libc6-compat
+# Provide a dummy DATABASE_URL to satisfy Prisma during build-time
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
