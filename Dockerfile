@@ -35,7 +35,7 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-# 3. Production image, copy all the files and run next
+# 3. Production image, copy only essential files
 FROM node:20-alpine AS runner
 WORKDIR /app
 
@@ -45,8 +45,12 @@ RUN apk add --no-cache openssl
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Copy everything from builder to ensure all dependencies (Prisma, etc.) are available
-COPY --from=builder /app ./
+# Copy essential files instead of everything
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/prisma ./prisma
 
 # Expose port and start
 EXPOSE 3000

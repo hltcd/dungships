@@ -101,8 +101,9 @@ if grep -q "localhost" "./certbot/conf/live/$DOMAIN/fullchain.pem" 2>/dev/null; 
     docker compose exec -T nginx nginx -s reload
 fi
 
-# 8. Dọn dẹp
-docker image prune -f
+# 8. Dọn dẹp hệ thống (Siêu dọn dẹp để tiết kiệm dung lượng VPS)
+echo "🧹 Đang dọn dẹp các tệp tin tạm và Docker cũ..."
+docker system prune -af --volumes
 
 echo ""
 echo "✅ [SUCCESS] Website đã online và an toàn!"
