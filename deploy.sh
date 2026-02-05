@@ -93,6 +93,7 @@ fi
 # 6. Cập nhật Database
 echo "🛠️ Đang chạy Migration..."
 docker compose exec -T app npx -y prisma@5.22.0 generate || true
+docker compose exec -T app npx -y prisma@5.22.0 db push --accept-data-loss || true
 docker compose exec -T app npx -y prisma@5.22.0 migrate deploy
 # docker compose exec -T app npx -y prisma@5.22.0 db seed
 
