@@ -39,18 +39,23 @@ export default function PlanForm({ plan }: PlanFormProps) {
 
     const formData = new FormData(event.currentTarget);
     
+    const parsePrice = (val: any) => {
+      const parsed = parseInt(val as string);
+      return isNaN(parsed) ? null : parsed;
+    };
+    
     const data = {
       id: plan?.id,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       type: type,
-      priceMonthly: type === "SUBSCRIPTION" ? parseInt(formData.get("priceMonthly") as string) || null : null,
-      priceYearly: type === "SUBSCRIPTION" ? parseInt(formData.get("priceYearly") as string) || null : null,
-      priceLifetime: type === "LIFETIME" ? parseInt(formData.get("priceLifetime") as string) || null : null,
+      priceMonthly: type === "SUBSCRIPTION" ? parsePrice(formData.get("priceMonthly")) : null,
+      priceYearly: type === "SUBSCRIPTION" ? parsePrice(formData.get("priceYearly")) : null,
+      priceLifetime: type === "LIFETIME" ? parsePrice(formData.get("priceLifetime")) : null,
       features: features.split("\n").filter(f => f.trim() !== ""),
       specialFeature: formData.get("specialFeature") as string,
       isBestChoice: formData.get("isBestChoice") === "on",
-      order: parseInt(formData.get("order") as string) || 0,
+      order: parsePrice(formData.get("order")) || 0,
       bonusProducts: selectedProductIds,
     };
 

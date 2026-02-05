@@ -24,22 +24,26 @@ export async function getPlans() {
 export async function upsertPlan(data: any) {
   try {
     const { id, bonusProducts, ...rest } = data;
-
-    const planData = {
-      ...rest,
-      bonusProducts: bonusProducts ? {
-        set: bonusProducts.map((productId: string) => ({ id: productId }))
-      } : undefined
-    };
+    const bonusProductsData = bonusProducts ? bonusProducts.map((productId: string) => ({ id: productId })) : [];
 
     if (id) {
       await prisma.pricingPlan.update({
         where: { id },
-        data: planData,
+        data: {
+          ...rest,
+          bonusProducts: {
+            set: bonusProductsData
+          }
+        },
       });
     } else {
       await prisma.pricingPlan.create({
-        data: planData,
+        data: {
+          ...rest,
+          bonusProducts: {
+            connect: bonusProductsData
+          }
+        },
       });
     }
 
