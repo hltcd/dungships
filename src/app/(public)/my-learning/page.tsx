@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BookOpen, Code, PlayCircle, Lock } from "lucide-react";
+import GitHubAccessUI from "@/components/GitHubAccessUI";
 
 export const metadata = {
   title: "Góc Học Tập | HocLapTrinhCungDung Course",
@@ -15,7 +16,7 @@ export default async function MyLearningPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, role: true, proExpiresAt: true }
+    select: { id: true, role: true, proExpiresAt: true, githubUsername: true }
   });
 
   if (!user) redirect("/login");
@@ -86,25 +87,45 @@ export default async function MyLearningPage() {
              {purchasedProducts.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {purchasedProducts.map((product: any) => (
-                        <Link key={product.id} href={product.link ? product.link : `/source-code/${product.slug}`} target={product.link ? "_blank" : "_self"} className="group relative block bg-[#1f1f2e] border border-gray-800 hover:border-purple-500/50 rounded-2xl overflow-hidden transition-all hover:transform hover:-translate-y-1 hover:shadow-2xl">
+                        <div key={product.id} className="group relative block bg-[#1f1f2e] border border-gray-800 hover:border-purple-500/50 rounded-2xl overflow-hidden transition-all hover:transform hover:-translate-y-1 hover:shadow-2xl">
                              <div className="aspect-video w-full relative overflow-hidden p-8 bg-gradient-to-br from-gray-800 to-black flex items-center justify-center">
-                                {/* Use Product image if avail, else placeholder */}
-                                {product.image ? (
-                                     <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
-                                ) : (
-                                    <Code className="w-16 h-16 text-gray-600 group-hover:text-purple-500 transition-colors" />
-                                )}
+                                {/* Clickable Image Only */}
+                                <Link href={product.link ? product.link : `/source-code/${product.slug}`} target={product.link ? "_blank" : "_self"} className="absolute inset-0 flex items-center justify-center z-0">
+                                    {product.image ? (
+                                         <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <Code className="w-16 h-16 text-gray-600 group-hover:text-purple-500 transition-colors" />
+                                    )}
+                                </Link>
                             </div>
-                            <div className="p-5">
-                                <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">{product.title}</h3>
-                                <div className="mt-4">
-                                     <button className="w-full bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-2">
-                                        <Code className="w-4 h-4" />
-                                        Truy cập Source
-                                     </button>
+                            <div className="p-5 relative z-10 bg-[#1f1f2e]">
+                                <h3 className="text-lg font-bold text-white mb-2 line-clamp-1">
+                                    <Link href={`/source-code/${product.slug}`} className="hover:text-purple-400 transition-colors">
+                                        {product.title}
+                                    </Link>
+                                </h3>
+                                <div className="mt-4 space-y-2">
+                                     {/* If GitHub Repo exists, show Access UI */}
+                                     {product.githubRepo ? (
+                                         <GitHubAccessUI 
+                                            productId={product.id} 
+                                            githubRepo={product.githubRepo} 
+                                            initialGithubUsername={user.githubUsername}
+                                         />
+                                     ) : (
+                                         <button className="w-full bg-purple-600/20 hover:bg-purple-600 text-purple-400 hover:text-white font-bold py-2 rounded-lg transition-all flex items-center justify-center gap-2">
+                                            <Code className="w-4 h-4" />
+                                            Truy cập Source
+                                         </button>
+                                     )}
+                                     
+                                     {/* Always allow download link if available as fallback/primary */}
+                                     {product.link && !product.githubRepo && (
+                                         <div className="hidden"></div> // Logic handled above by button wrapping or we can separate
+                                     )}
                                 </div>
                             </div>
-                        </Link>
+                        </div>
                     ))}
                 </div>
             ) : (

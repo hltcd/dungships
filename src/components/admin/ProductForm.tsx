@@ -152,6 +152,19 @@ export default function ProductForm({ product }: ProductFormProps) {
         </div>
         
         <div className="space-y-2">
+           <label className="text-sm font-medium text-gray-400">GitHub Repository (Private)</label>
+           <input 
+                name="githubRepo" 
+                defaultValue={product?.githubRepo || ""}
+                placeholder="owner/repo (e.g. hltcd/dungships)"
+                className="w-full bg-[#111118] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+           />
+           <p className="text-xs text-gray-500">
+               Allows customers to be invited as collaborators automatically.
+           </p>
+        </div>
+        
+        <div className="space-y-2">
              <div className="space-y-2">
                 <input name="link" type="hidden" value={link} />
                 <FileUpload 

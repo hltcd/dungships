@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
  * Hàm này sẽ được gọi khi Payment Gateway (VNPay, Stripe, MOMO) báo thanh toán thành công
  * Hoặc gọi khi Admin kích hoạt thủ công.
  */
-export async function handleProUpgradeSuccess(userId: string, planType: 'monthly' | 'yearly' | 'lifetime' = 'monthly') {
+export async function handleProUpgradeSuccess(userId: string, planType: 'monthly' | 'yearly' | 'lifetime' = 'monthly', planId?: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("User not found");
 
@@ -30,6 +30,23 @@ export async function handleProUpgradeSuccess(userId: string, planType: 'monthly
       proExpiresAt: newBuyerExpiry 
     }
   });
+
+  // 1.1 Record Plan Purchase for Bonus Access
+  if (planId) {
+    await prisma.purchase.upsert({
+      where: {
+        userId_planId: {
+          userId,
+          planId
+        }
+      },
+      update: {}, // Already exists, just make sure relation is there
+      create: {
+        userId,
+        planId
+      }
+    });
+  }
 
   // 2. Check Referral Reward
   if (user.referredBy) {

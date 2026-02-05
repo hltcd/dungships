@@ -5,6 +5,18 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
+export async function getProducts() {
+  try {
+    const products = await prisma.product.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return products;
+  } catch (error) {
+    console.error("Get Products Error:", error);
+    return [];
+  }
+}
+
 const productSchema = z.object({
   title: z.string().min(1, "Title is required"),
   slug: z.string().min(1, "Slug is required"),
@@ -14,6 +26,7 @@ const productSchema = z.object({
   originalPrice: z.coerce.number().optional(),
   image: z.string().url("Invalid image URL"),
   link: z.string().optional().or(z.literal("")), // Allow R2 keys (paths) which are not URLs
+  githubRepo: z.string().optional(), // format: owner/repo
   tags: z.string().optional(), // Will split by comma
   features: z.string().optional(), // Will split by newline
   gallery: z.string().optional(), // Will split by newline
@@ -46,6 +59,7 @@ export async function createProduct(formData: FormData) {
         originalPrice: originalPrice || null,
         image,
         link: link || null,
+        githubRepo: validated.data.githubRepo || null,
         tags,
         features,
         gallery
@@ -88,6 +102,7 @@ export async function updateProduct(id: string, formData: FormData) {
           originalPrice: originalPrice || null,
           image,
           link: link || null,
+          githubRepo: validated.data.githubRepo || null,
           tags,
           features,
           gallery

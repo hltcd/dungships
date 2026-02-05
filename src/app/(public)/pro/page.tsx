@@ -3,6 +3,7 @@ import PricingSection from "@/components/PricingSection";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { CheckCircle, Clock, Zap } from "lucide-react";
+import { getPlans } from "@/actions/plans";
 
 export default async function ProLandingPage() {
   const session = await auth();
@@ -77,7 +78,7 @@ export default async function ProLandingPage() {
         <div className="w-24 h-1 bg-[#6c7983] rounded-full mt-10 opacity-60"></div>
       </div>
 
-      <PricingSection session={session} />
+      <PricingSection session={session} plans={await getPlans()} />
     </div>
   );
 }

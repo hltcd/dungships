@@ -10,7 +10,9 @@ import {
   Star, 
   ShoppingCart,
   Zap,
-  LogOut
+  CreditCard,
+  LogOut,
+  Github
 } from "lucide-react";
 
 interface User {
@@ -23,9 +25,11 @@ const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/courses", label: "Khóa học", icon: BookOpen },
   { href: "/admin/products", label: "Source Code", icon: Package },
+  { href: "/admin/github-invites", label: "GitHub Invites", icon: Github },
   { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/reviews", label: "Reviews", icon: Star },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/admin/plans", label: "Gói Pro", icon: CreditCard },
 ];
 
 export default function AdminSidebar({ user }: { user: User }) {

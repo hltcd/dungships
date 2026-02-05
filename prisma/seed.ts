@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from '@prisma/client';
+import { PrismaClient, Role, PlanType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { courses } from '../src/lib/courses';
 import { products } from '../src/lib/products';
@@ -89,6 +89,59 @@ async function main() {
       },
     });
     console.log(`📦 Created product: ${createdProduct.title}`);
+  }
+  
+  // 4. Seed Pricing Plans
+  const plansData = [
+    {
+      name: "Standard Access",
+      description: "Thanh toán linh hoạt, truy cập đầy đủ nội dung.",
+      type: PlanType.SUBSCRIPTION,
+      priceMonthly: 199,
+      priceYearly: 1690,
+      features: [
+        "Truy cập toàn bộ khóa học PRO",
+        "Source code dự án thực tế",
+        "Xem video 4K không quảng cáo",
+        "Tham gia cộng đồng Discord VIP"
+      ],
+      order: 1,
+      isBestChoice: false
+    },
+    {
+      name: "VIP Lifetime",
+      description: "Đầu tư một lần, sở hữu mãi mãi với nhiều đặc quyền.",
+      type: PlanType.LIFETIME,
+      priceLifetime: 3990,
+      specialFeature: "Mentor hỗ trợ 1:1, Review CV & Portfolio, Tư vấn lộ trình thăng tiến.",
+      features: [
+        "Tất cả quyền lợi gói Standard",
+        "Không bao giờ phải gia hạn",
+        "Ưu tiên hỗ trợ 24/7 (Priority)",
+        "Quà tặng: Áo thun & Sticker Dev",
+        "Chứng nhận hoàn thành (Hard Copy)"
+      ],
+      order: 2,
+      isBestChoice: true
+    }
+  ];
+
+  for (const plan of plansData) {
+    const existing = await prisma.pricingPlan.findFirst({
+      where: { name: plan.name }
+    });
+    
+    if (existing) {
+      await prisma.pricingPlan.update({
+        where: { id: existing.id },
+        data: plan
+      });
+    } else {
+      await prisma.pricingPlan.create({
+        data: plan
+      });
+    }
+    console.log(`💳 Created plan: ${plan.name}`);
   }
 
   console.log('✨ Seeding finished.');

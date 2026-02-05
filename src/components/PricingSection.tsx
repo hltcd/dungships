@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Flame } from "lucide-react";
+import { PricingPlan, Product } from "@prisma/client";
+import { Flame, Check, Zap, Globe, Clock, Gift, Package } from "lucide-react";
 
-export default function PricingSection({ session }: { session: any }) {
+export default function PricingSection({ session, plans }: { session: any, plans: (PricingPlan & { bonusProducts: Product[] })[] }) {
   const [planType, setPlanType] = useState<"monthly" | "yearly">("monthly");
   
   const paymentBaseUrl = session?.user ? "/pro/payment" : "/login?callbackUrl=/pro/payment";
@@ -14,139 +15,141 @@ export default function PricingSection({ session }: { session: any }) {
       
       {/* Premium Pricing Cards */}
       <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto items-stretch">
-        
-        {/* STANDARD PLAN (Subscription) */}
-        <div className="relative group">
-          <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
-          <div className="relative h-full bg-[#121217] border border-white/5 rounded-3xl p-8 flex flex-col hover:bg-[#16161c] transition-colors">
+        {plans.map((plan: PricingPlan & { bonusProducts: Product[] }) => (
+          <div key={plan.id} className="relative group">
+            {/* Glow Effect for Best Choice */}
+            {plan.isBestChoice && (
+              <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
+            )}
+            {!plan.isBestChoice && (
+              <div className="absolute -inset-0.5 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-3xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
+            )}
             
-            <div className="mb-6">
-              <h3 className="text-xl font-medium text-blue-400 mb-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                Standard Access
-              </h3>
+            <div className={`relative h-full bg-[#121217] border rounded-3xl p-8 flex flex-col transition-colors ${
+              plan.isBestChoice ? "border-yellow-500/30" : "border-white/5 hover:bg-[#16161c]"
+            }`}>
               
-              <div className="flex items-center gap-2 bg-white/5 p-1 rounded-lg w-fit mb-6">
-                 <button 
-                  onClick={() => setPlanType("monthly")}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
-                    planType === "monthly" 
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
-                    : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  Theo Tháng
-                </button>
-                <button 
-                  onClick={() => setPlanType("yearly")}
-                  className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${
-                    planType === "yearly" 
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
-                    : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  Theo Năm <span className="text-[9px] bg-white/20 px-1 rounded">-30%</span>
-                </button>
-              </div>
-
-              <div className="h-20">
-                <div className="flex items-baseline gap-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <span className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                        {planType === 'monthly' ? '199k' : '1.69tr'}
-                    </span>
-                    <span className="text-gray-500 font-medium">/{planType === 'monthly' ? 'tháng' : 'năm'}</span>
+              {/* Best Value Badge */}
+              {plan.isBestChoice && (
+                <div className="absolute top-0 right-8 -translate-y-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold text-xs px-4 py-1.5 rounded-full shadow-lg shadow-orange-500/20 flex items-center gap-1">
+                    <Flame className="w-3 h-3 fill-black" />
+                    BEST CHOICE
                 </div>
-                <p className="text-sm text-gray-500 mt-2">
-                    {planType === 'monthly' ? 'Thanh toán linh hoạt, hủy bất kỳ lúc nào.' : 'Tiết kiệm 700k so với trả từng tháng.'}
-                </p>
-              </div>
-            </div>
+              )}
 
-            <div className="space-y-4 mb-8 flex-1">
-               {[
-                 "Truy cập toàn bộ khóa học PRO",
-                 "Source code dự án thực tế",
-                 "Xem video 4K không quảng cáo",
-                 "Tham gia cộng đồng Discord VIP"
-               ].map((feat, i) => (
-                 <div key={i} className="flex items-start gap-3 text-sm text-gray-300">
-                   <Check className="w-5 h-5 text-blue-500 flex-shrink-0" />
-                   <span>{feat}</span>
-                 </div>
-               ))}
-            </div>
-
-            <Link 
-               href={`${paymentBaseUrl}?plan=${planType}`}
-               className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold text-center transition-all hover:scale-[1.02] flex items-center justify-center gap-2 group-hover:border-blue-500/30"
-            >
-               Bắt đầu ngay
-            </Link>
-          </div>
-        </div>
-
-        {/* LIFETIME PLAN (VIP) */}
-        <div className="relative group">
-           {/* Glow Effect */}
-           <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-3xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
-           
-           <div className="relative h-full bg-[#121217] border border-yellow-500/30 rounded-3xl p-8 flex flex-col">
-             
-             {/* Best Value Badge */}
-             <div className="absolute top-0 right-8 -translate-y-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold text-xs px-4 py-1.5 rounded-full shadow-lg shadow-orange-500/20 flex items-center gap-1">
-                <Flame className="w-3 h-3 fill-black" />
-                BEST CHOICE
-             </div>
-
-             <div className="mb-6">
-                <h3 className="text-xl font-medium text-yellow-400 mb-2 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                    VIP Lifetime
+              <div className="mb-6">
+                <h3 className={`text-xl font-medium mb-2 flex items-center gap-2 ${plan.isBestChoice ? "text-yellow-400" : "text-blue-400"}`}>
+                  <span className={`w-2 h-2 rounded-full ${plan.isBestChoice ? "bg-yellow-400 animate-pulse" : "bg-blue-500"}`}></span>
+                  {plan.name}
                 </h3>
-                <div className="h-9 mb-6"></div> {/* Spacer to align with toggle */}
+                
+                {plan.type === "SUBSCRIPTION" && (
+                  <div className="flex items-center gap-2 bg-white/5 p-1 rounded-lg w-fit mb-6">
+                    <button 
+                      onClick={() => setPlanType("monthly")}
+                      className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all ${
+                        planType === "monthly" 
+                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
+                        : "text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      Theo Tháng
+                    </button>
+                    <button 
+                      onClick={() => setPlanType("yearly")}
+                      className={`px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${
+                        planType === "yearly" 
+                        ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" 
+                        : "text-gray-400 hover:text-white"
+                      }`}
+                    >
+                      Theo Năm <span className="text-[9px] bg-white/20 px-1 rounded">-30%</span>
+                    </button>
+                  </div>
+                )}
+                {plan.type === "LIFETIME" && <div className="h-9 mb-6"></div>}
 
                 <div className="h-20">
-                     <div className="flex items-baseline gap-1">
-                        <span className="text-4xl md:text-5xl font-bold text-white tracking-tight">3.99tr</span>
-                        <span className="text-gray-500 font-medium">/trọn đời</span>
-                     </div>
-                     <p className="text-sm text-yellow-500/80 mt-2 font-medium">Đầu tư 1 lần - Sở hữu mãi mãi</p>
+                  <div className="flex items-baseline gap-1 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                      <span className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                          {plan.type === "SUBSCRIPTION" 
+                            ? (planType === 'monthly' ? `${plan.priceMonthly}k` : `${plan.priceYearly && plan.priceYearly >= 1000 ? (plan.priceYearly/1000).toFixed(2) + 'tr' : plan.priceYearly + 'k'}`)
+                            : `${plan.priceLifetime && plan.priceLifetime >= 1000 ? (plan.priceLifetime/1000).toFixed(2) + 'tr' : plan.priceLifetime + 'k'}`
+                          }
+                      </span>
+                      <span className="text-gray-500 font-medium">
+                        /{plan.type === "SUBSCRIPTION" ? (planType === 'monthly' ? 'tháng' : 'năm') : 'trọn đời'}
+                      </span>
+                  </div>
+                  <p className={`text-sm mt-2 ${plan.isBestChoice ? "text-yellow-500/80 font-medium" : "text-gray-500"}`}>
+                      {plan.type === "SUBSCRIPTION" 
+                        ? (planType === 'monthly' ? 'Thanh toán linh hoạt, hủy bất kỳ lúc nào.' : 'Tiết kiệm đáng kể so với trả từng tháng.')
+                        : 'Đầu tư 1 lần - Sở hữu mãi mãi'
+                      }
+                  </p>
                 </div>
-             </div>
+              </div>
 
-             <div className="space-y-4 mb-8 flex-1">
-                <div className="p-3 rounded-lg bg-yellow-500/5 border border-yellow-500/10 mb-4">
-                    <p className="text-xs text-yellow-200 font-medium leading-relaxed">
-                        ✨ Đặc quyền: Mentor hỗ trợ 1:1, Review CV & Portfolio, Tư vấn lộ trình thăng tiến.
+              <div className="space-y-4 mb-8 flex-1">
+                {plan.specialFeature && (
+                  <div className={`p-3 rounded-lg border mb-4 ${
+                    plan.isBestChoice ? "bg-yellow-500/5 border-yellow-500/10" : "bg-blue-500/5 border-blue-500/10"
+                  }`}>
+                      <p className={`text-xs font-medium leading-relaxed ${plan.isBestChoice ? "text-yellow-200" : "text-blue-200"}`}>
+                          ✨ Đặc quyền: {plan.specialFeature}
+                      </p>
+                  </div>
+                )}
+
+                {plan.features.map((feat: string, i: number) => (
+                  <div key={i} className="flex items-start gap-3 text-sm text-gray-200">
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                      plan.isBestChoice ? "bg-yellow-500/20" : "bg-blue-500/20"
+                    }`}>
+                        <Check className={`w-3 h-3 ${plan.isBestChoice ? "text-yellow-400" : "text-blue-400"}`} strokeWidth={3} />
+                    </div>
+                    <span>{feat}</span>
+                  </div>
+                ))}
+
+                {plan.bonusProducts && plan.bonusProducts.length > 0 && (
+                  <div className="pt-4 mt-2 border-t border-white/5 space-y-3">
+                    <p className="text-[10px] font-bold text-yellow-500 tracking-widest uppercase flex items-center gap-1.5 px-1">
+                      <Gift className="w-3 h-3" />
+                      Quà tặng kèm (Source Code)
                     </p>
-                </div>
+                    {plan.bonusProducts.map((product: Product) => (
+                      <a 
+                        key={product.id} 
+                        href={`/source-code/${product.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 text-sm text-blue-400 group/item hover:text-blue-300 transition-colors"
+                      >
+                        <div className="w-5 h-5 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 group-hover/item:scale-110 transition-transform group-hover/item:bg-blue-500/20">
+                          <Package className="w-3 h-3" />
+                        </div>
+                        <span className="font-medium">{product.title}</span>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-               {[
-                 "Tất cả quyền lợi gói Standard",
-                 "Không bao giờ phải gia hạn",
-                 "Ưu tiên hỗ trợ 24/7 (Priority)",
-                 "Quà tặng: Áo thun & Sticker Dev",
-                 "Chứng nhận hoàn thành (Hard Copy)"
-               ].map((feat, i) => (
-                 <div key={i} className="flex items-start gap-3 text-sm text-gray-200">
-                   <div className="w-5 h-5 rounded-full bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
-                      <Check className="w-3 h-3 text-yellow-400" strokeWidth={3} />
-                   </div>
-                   <span>{feat}</span>
-                 </div>
-               ))}
-             </div>
-
-             <Link 
-               href={`${paymentBaseUrl}?plan=lifetime`}
-               className="w-full py-4 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold text-center transition-all hover:shadow-lg hover:shadow-orange-500/25 hover:scale-[1.02] flex items-center justify-center gap-2"
-            >
-               <Flame className="w-4 h-4 fill-black" />
-               Nâng cấp VIP
-            </Link>
-           </div>
-        </div>
-
+              <Link 
+                href={`${paymentBaseUrl}?plan=${plan.type === "LIFETIME" ? "lifetime" : planType}&planId=${plan.id}`}
+                className={`w-full py-4 rounded-xl font-bold text-center transition-all hover:scale-[1.02] flex items-center justify-center gap-2 ${
+                  plan.isBestChoice 
+                    ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-black hover:shadow-lg hover:shadow-orange-500/25" 
+                    : "bg-white/5 hover:bg-white/10 border border-white/10 text-white group-hover:border-blue-500/30"
+                }`}
+              >
+                {plan.isBestChoice && <Flame className="w-4 h-4 fill-black" />}
+                {plan.isBestChoice ? "Nâng cấp VIP" : "Bắt đầu ngay"}
+              </Link>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

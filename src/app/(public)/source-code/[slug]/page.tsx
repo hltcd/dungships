@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ChevronLeft, ShoppingCart, Check, Shield, Zap, Star, Download } from 'lucide-react';
+import { ChevronLeft, ShoppingCart, Check, Shield, Zap, Star, Download, Github } from 'lucide-react';
 import ImageGallery from '@/components/ImageGallery';
 import ReviewList from '@/components/ReviewList';
 import ReviewForm from '@/components/ReviewForm';
@@ -10,6 +10,8 @@ import { prisma } from '@/lib/prisma';
 import { Review } from '@/lib/products';
 import { auth } from '@/auth';
 import { Metadata, ResolvingMetadata } from 'next';
+import GithubInviteForm from '@/components/GithubInviteForm';
+import ReactMarkdown from 'react-markdown';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -68,7 +70,12 @@ export default async function ProductDetailPage(props: PageProps) {
             orderBy: {
                 createdAt: 'desc' 
             }
-        } 
+        },
+        githubInvites: {
+            where: {
+                userId: session?.user?.id || undefined
+            }
+        }
     }
   });
 
@@ -90,8 +97,30 @@ export default async function ProductDetailPage(props: PageProps) {
                   }
               }
           });
+          
           if (purchase) {
               hasAccess = true;
+          } else {
+              // Check if user has a plan that includes this product as a bonus
+              const planPurchases = await prisma.purchase.findMany({
+                  where: {
+                      userId: session.user.id,
+                      planId: { not: null }
+                  },
+                  include: {
+                      plan: {
+                          include: {
+                              bonusProducts: {
+                                  select: { id: true }
+                              }
+                          }
+                      }
+                  }
+              });
+
+              hasAccess = planPurchases.some(p => 
+                  p.plan?.bonusProducts.some(bp => bp.id === product.id)
+              );
           }
       }
   }
@@ -163,13 +192,24 @@ export default async function ProductDetailPage(props: PageProps) {
                 <AnimatedPrice price={product.price} originalPrice={product.originalPrice} />
 
                 {hasAccess ? (
-                     <a 
-                        href={`/api/products/${product.id}/download`}
-                        className="w-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all shadow-lg shadow-green-500/20 transform hover:-translate-y-1 text-lg mb-2"
-                     >
-                        <Download className="w-6 h-6" />
-                        Tải Source Code Ngay
-                     </a>
+                     <div className="flex flex-col sm:flex-row gap-3 mb-2">
+                         <a 
+                            href={`/api/products/${product.id}/download`}
+                            className="flex-1 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-green-500/20 transform hover:-translate-y-1 text-base md:text-lg"
+                         >
+                            <Download className="w-5 h-5" />
+                            Tải Source Code
+                         </a>
+                         {product.githubRepo && (
+                            <a 
+                                href="#github-invite-section"
+                                className="flex-1 bg-white/[0.05] border border-white/10 hover:bg-white/[0.1] text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-all transform hover:-translate-y-1 text-base md:text-lg"
+                            >
+                                <Github className="w-5 h-5" />
+                                GitHub Invite
+                            </a>
+                         )}
+                     </div>
                 ) : (
                     <BuyButton 
                         productId={product.id} 
@@ -188,11 +228,16 @@ export default async function ProductDetailPage(props: PageProps) {
                 </p>
             </div>
 
-            <div className="prose prose-invert max-w-none">
-                <h3 className="text-2xl font-bold text-white mb-4">Chi tiết sản phẩm</h3>
-                <p className="text-gray-400 text-lg mb-6">
-                    {product.longDescription || product.description}
-                </p>
+            <div className="prose prose-sm prose-invert max-w-none prose-headings:text-white prose-p:text-gray-400 prose-strong:text-white prose-li:text-gray-300">
+                <h3 className="text-xl font-bold text-white mb-4">Chi tiết sản phẩm</h3>
+                <div className="mb-6 leading-7">
+                    <ReactMarkdown>
+                        {String(product.longDescription || product.description)
+                            .replace(/\\n/g, '\n')
+                            .replace(/\n(?=[#*-])/g, '\n\n') // Ensure newlines before headers/lists
+                        }
+                    </ReactMarkdown>
+                </div>
                 
                 {product.features && (
                     <>
@@ -211,6 +256,17 @@ export default async function ProductDetailPage(props: PageProps) {
                 )}
             </div>
             
+            {/* GitHub Invite Section for Pro users/Buyers */}
+            {hasAccess && product.githubRepo && (
+                <div className="mb-12 scroll-mt-24" id="github-invite-section">
+                    <GithubInviteForm 
+                        productId={product.id}
+                        initialGithubUsername={product.githubInvites[0]?.githubUsername}
+                        initialStatus={product.githubInvites[0]?.status}
+                    />
+                </div>
+            )}
+
             {/* Review Form */}
             {hasAccess && !reviews.some(r => r.userId === session?.user?.id) && (
                  <div className="mb-12 mt-16">

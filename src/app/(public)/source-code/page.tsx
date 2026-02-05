@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ShoppingCart, Star, Code, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma'; // Use real DB client
+import { stripMarkdown } from '@/lib/markdown';
 
 export default async function SourceCodePage() {
   // Fetch products from Database
@@ -57,7 +58,7 @@ export default async function SourceCodePage() {
                     {product.title}
                 </h3>
                 <p className="text-gray-400 text-sm mb-6 line-clamp-2 min-h-[40px] font-medium leading-relaxed">
-                    {product.description}
+                    {stripMarkdown(product.description)}
                 </p>
 
                 <div className="flex items-center justify-between border-t border-white/5 pt-4">
