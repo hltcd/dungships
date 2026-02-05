@@ -249,7 +249,10 @@ export default async function ProductDetailPage(props: PageProps) {
                     </>
                 )}
             </div>
-            
+        </div>
+        
+        {/* Bottom Sections: GitHub Invite & Reviews */}
+        <div className="mt-16 pt-16 border-t border-white/5">
             {/* GitHub Invite Section for Pro users/Buyers */}
             {hasAccess && product.githubRepo && (
                 <div className="mb-12 scroll-mt-24" id="github-invite-section">
@@ -263,7 +266,7 @@ export default async function ProductDetailPage(props: PageProps) {
 
             {/* Review Form */}
             {hasAccess && !reviews.some(r => r.userId === session?.user?.id) && (
-                 <div className="mb-12 mt-16">
+                 <div className="mb-12">
                     <ReviewForm productId={product.id} />
                  </div>
             )}
@@ -271,6 +274,6 @@ export default async function ProductDetailPage(props: PageProps) {
             {/* Reviews Section */}
             <ReviewList reviews={reviews} />
         </div>
-      </div>
+    </div>
   );
 }
