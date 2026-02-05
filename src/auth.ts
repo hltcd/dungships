@@ -76,12 +76,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        // Fetch user role from database
+        // Fetch user role and githubUsername from database
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { role: true }
+          select: { role: true, githubUsername: true }
         });
         token.role = dbUser?.role || "USER";
+        token.githubUsername = dbUser?.githubUsername || null;
       }
       return token;
     },
@@ -89,6 +90,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
+        session.user.githubUsername = token.githubUsername as string | null;
       }
       return session;
     }

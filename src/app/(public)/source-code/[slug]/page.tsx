@@ -11,7 +11,7 @@ import { Review } from '@/lib/products';
 import { auth } from '@/auth';
 import { Metadata, ResolvingMetadata } from 'next';
 import GithubInviteForm from '@/components/GithubInviteForm';
-import ReactMarkdown from 'react-markdown';
+import ProductDescription from '@/components/ProductDescription';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -228,16 +228,10 @@ export default async function ProductDetailPage(props: PageProps) {
                 </p>
             </div>
 
-            <div className="prose prose-sm prose-invert max-w-none prose-headings:text-white prose-p:text-gray-400 prose-strong:text-white prose-li:text-gray-300">
+            <div className="mb-12">
                 <h3 className="text-xl font-bold text-white mb-4">Chi tiết sản phẩm</h3>
-                <div className="mb-6 leading-7">
-                    <ReactMarkdown>
-                        {String(product.longDescription || product.description)
-                            .replace(/\\n/g, '\n')
-                            .replace(/\n(?=[#*-])/g, '\n\n') // Ensure newlines before headers/lists
-                        }
-                    </ReactMarkdown>
-                </div>
+                <ProductDescription content={product.longDescription || product.description} />
+            </div>
                 
                 {product.features && (
                     <>
@@ -278,6 +272,5 @@ export default async function ProductDetailPage(props: PageProps) {
             <ReviewList reviews={reviews} />
         </div>
       </div>
-    </div>
   );
 }
