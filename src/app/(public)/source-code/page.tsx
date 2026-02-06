@@ -78,19 +78,19 @@ export default async function SourceCodePage() {
               {/* Content */}
               <div className="p-6 relative z-10">
                   <div className="flex flex-wrap gap-2 mb-4">
-                      {product.tags.map((tag: any) => (
-                          <span key={tag} className="text-[10px] font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-tighter">
-                              {tag}
-                          </span>
-                      ))}
-                  </div>
+                    {product.tags && Array.isArray(product.tags) ? product.tags.map((tag: any) => (
+                        <span key={tag} className="text-[10px] font-black text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20 uppercase tracking-tighter">
+                            {tag}
+                        </span>
+                    )) : null}
+                </div>
 
-                  <h3 className="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 uppercase tracking-tight">
-                      {product.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-6 line-clamp-2 min-h-[40px] font-medium leading-relaxed">
-                      {stripMarkdown(product.description)}
-                  </p>
+                <h3 className="text-lg font-black text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1 uppercase tracking-tight">
+                    {product.title}
+                </h3>
+                <p className="text-gray-400 text-sm mb-6 line-clamp-2 min-h-[40px] font-medium leading-relaxed">
+                    {stripMarkdown(product.description || "")}
+                </p>
 
                   <div className="flex items-center justify-between border-t border-white/5 pt-4">
                       <div className="flex flex-col">

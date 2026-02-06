@@ -47,8 +47,8 @@ export default async function MyLearningPage() {
 
   // Products from plans
   const planBonusProducts = purchases
-    .filter((p: any) => p.plan)
-    .flatMap((p: any) => p.plan!.bonusProducts);
+    .filter((p: any) => p.plan && p.plan.bonusProducts)
+    .flatMap((p: any) => p.plan!.bonusProducts || []);
 
   // Combine and remove duplicates
   const allPurchasedProducts = [...explicitlyPurchasedProducts, ...planBonusProducts];

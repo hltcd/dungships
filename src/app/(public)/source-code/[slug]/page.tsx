@@ -131,7 +131,8 @@ export default async function ProductDetailPage(props: PageProps) {
       : [product.image];
 
   // Map Prisma reviews to component props with live user data
-  const reviews = product.reviews.map(r => ({
+  const rawReviews = product.reviews || [];
+  const reviews = rawReviews.map(r => ({
       ...r,
       user: r.reviewer?.name || r.user,
       avatar: r.reviewer?.image || r.avatar || "/default-avatar.png",
@@ -174,7 +175,7 @@ export default async function ProductDetailPage(props: PageProps) {
         <div className="flex flex-col">
             <div className="mb-6">
                  <div className="flex gap-2 mb-4 flex-wrap">
-                    {product.tags.map(tag => (
+                    {product.tags && Array.isArray(product.tags) && product.tags.map(tag => (
                         <span key={tag} className="text-xs font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20 uppercase">
                             #{tag}
                         </span>
@@ -233,7 +234,7 @@ export default async function ProductDetailPage(props: PageProps) {
                 <ProductDescription content={product.longDescription || product.description} />
             </div>
                 
-                {product.features && (
+                {product.features && Array.isArray(product.features) && product.features.length > 0 && (
                     <>
                         <h3 className="text-2xl font-bold text-white mb-4">Tính năng nổi bật</h3>
                         <ul className="space-y-3">
