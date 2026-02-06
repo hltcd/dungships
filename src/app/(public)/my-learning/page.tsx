@@ -21,12 +21,17 @@ export default async function MyLearningPage() {
 
   if (!user) redirect("/login");
 
-  // Fetch Purchases (Explicitly bought items)
+  // Fetch Purchases (Explicitly bought items and Plans)
   const purchases = await prisma.purchase.findMany({
     where: { userId: user.id },
     include: {
       course: true,
-      product: true
+      product: true,
+      plan: {
+        include: {
+          bonusProducts: true
+        }
+      }
     },
     orderBy: { createdAt: 'desc' }
   });
@@ -35,9 +40,19 @@ export default async function MyLearningPage() {
     .filter((p: any) => p.course)
     .map((p: any) => p.course!);
     
-  const purchasedProducts = purchases
+  // Explicitly purchased products
+  const explicitlyPurchasedProducts = purchases
     .filter((p: any) => p.product)
     .map((p: any) => p.product!);
+
+  // Products from plans
+  const planBonusProducts = purchases
+    .filter((p: any) => p.plan)
+    .flatMap((p: any) => p.plan!.bonusProducts);
+
+  // Combine and remove duplicates
+  const allPurchasedProducts = [...explicitlyPurchasedProducts, ...planBonusProducts];
+  const purchasedProducts = Array.from(new Map(allPurchasedProducts.map(p => [p.id, p])).values());
 
   // If PRO, fetch ALL published courses (excluding ones already purchased to avoid dupes)
   let proCourses: any[] = [];
