@@ -38,16 +38,47 @@ export async function GET(
     const isAdmin = session.user.role === "ADMIN";
     
     // Check purchase
-    const purchase = await prisma.purchase.findUnique({
-        where: {
-            userId_productId: {
-                userId: session.user.id,
-                productId: id
+    // Check purchase
+    let hasAccess = false;
+    if (isAdmin) {
+        hasAccess = true;
+    } else {
+        const directPurchase = await prisma.purchase.findUnique({
+            where: {
+                userId_productId: {
+                    userId: session.user.id,
+                    productId: id
+                }
             }
-        }
-    });
+        });
 
-    if (!isAdmin && !purchase) {
+        if (directPurchase) {
+            hasAccess = true;
+        } else {
+            // Check if user has a plan that includes this product as a bonus
+            const planPurchases = await prisma.purchase.findMany({
+                where: {
+                    userId: session.user.id,
+                    planId: { not: null }
+                },
+                include: {
+                    plan: {
+                        include: {
+                            bonusProducts: {
+                                select: { id: true }
+                            }
+                        }
+                    }
+                }
+            });
+
+            hasAccess = planPurchases.some(p => 
+                p.plan?.bonusProducts.some(bp => bp.id === id)
+            );
+        }
+    }
+
+    if (!hasAccess) {
         return NextResponse.json({ error: "Forbidden: You must purchase this product first." }, { status: 403 });
     }
 
